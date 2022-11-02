@@ -1,4 +1,6 @@
-﻿using System;
+﻿using AngleSharp;
+using AngleSharp.Dom;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -12,21 +14,23 @@ namespace DDOAPI
     {
         private static readonly string url = "https://ordnet.dk/ddo/ordbog?query=";
 
-        public static string DownloadString(string query)
+        public static async Task<IDocument> DownloadDocument(string query)
         {
-            // Downloads a source file from a webpage 
+            var config = Configuration.Default.WithDefaultLoader();
+            var context = BrowsingContext.New(config);
 
-
-            // best practice to create one HttpClient per Application and inject it
-            HttpClient client = new HttpClient();
-
-            using (HttpResponseMessage response = client.GetAsync(url+query).Result)
+            var document = await context.OpenAsync($"{url}{query}");
+            if (document == null)
             {
-                using (HttpContent content = response.Content)
-                {
-                    return content.ReadAsStringAsync().Result;
-                }
+                throw new Exception("Document is null");
             }
+
+
+
+            return document;
         }
+
+
+
     }
 }

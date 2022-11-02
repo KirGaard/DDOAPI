@@ -9,14 +9,20 @@ namespace DDOAPI
     internal class Word
     {
         public string name;
-        public int nameIdentifier = 0;
+        public int nameIdentifier;
         public string wordClass;
 
+        public Word(string name)
+        {
+            this.name = name;
+            this.wordClass = "";
+            this.nameIdentifier = 1;
+        }
         public Word(string name, string wordClass)
         {
             this.name = name;
-            this.wordClass = wordClass; 
-
+            this.wordClass = wordClass;
+            this.nameIdentifier = 1;
 
         }
 

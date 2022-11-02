@@ -1,31 +1,48 @@
-﻿
-
+﻿using AngleSharp.Dom;
 using DDOAPI;
 
 
-Console.WriteLine("Hvilket ord ønsker du at slå op?");
+Console.WriteLine("Hvilket ord vil du slå op?");
+var input = Console.ReadLine();
+if (input == null)
+{
+    throw new Exception("Input is null");
+}
 
+var word = Searcher.Search(out bool validSearch, out bool hasSuper, input);
 
-string ?query = Console.ReadLine();
-if (query == null) 
-{ 
-    Console.WriteLine("This is not a word");
+if (!validSearch || word == null)
+{
+    Console.WriteLine("This word does not excist in the DOO");
     return;
 }
 
-
-var words = Scanner.GetMatches(out bool match, query);
-
-
-
-
-if (match)
+Console.WriteLine(word.ToString());
+if (hasSuper)
 {
-    words?.ForEach(w => Console.WriteLine(w));
+    Console.WriteLine("This word has mulitple definitions");
+    Console.WriteLine("Do you whish to see all definitions? (yes/y)");
+    var answer = Console.ReadLine();
+
+    if (answer == "yes" || answer == "y")
+    {
+        Console.WriteLine("All definitions:");
+        Searcher.MultipleSearch(input).ForEach(w => Console.WriteLine(w.ToString()));
+    }
 }
-else
-{
-    Console.WriteLine("This word does not exist in DDO");
-}
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
 
 
