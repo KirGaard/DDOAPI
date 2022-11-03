@@ -6,19 +6,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace DDOAPI
+namespace DDOCrawler
 {
     internal static class Searcher
     {
-        public static IHtmlCollection<IElement>? GetMactches(out bool anyMatches, IDocument document)
+        public static IHtmlCollection<IElement>? GetMactches(out bool anyMatches, IElement definitionBox)
         {
             anyMatches = false;
-
-            var definitionBox = document?.QuerySelector(".definitionBoxTop");
-            if (definitionBox == null)
-            {
-                return null;
-            }
 
             var matches = definitionBox.QuerySelectorAll(".match");
             if (matches == null || matches.Length <= 0)
@@ -48,13 +42,16 @@ namespace DDOAPI
                 return null;
             }
 
-            var matches = GetMactches(out bool anyMatches, document);
-            if (!anyMatches)
+
+            var definitionBox = document.QuerySelector(".definitionBoxTop");
+            if (definitionBox == null) return null;
+
+            var matches = GetMactches(out bool anyMatches, definitionBox);
+            if (!anyMatches || matches == null)
             {
                 return null;
             }
 
-            
             foreach (var match in matches)
             {
                 
@@ -65,13 +62,11 @@ namespace DDOAPI
 
             }
 
-            
-
             validSearch = true;
             var name = GetName(matches);
-            
+            var wordClass = GetWordClass(definitionBox);
 
-            return new Word(name, "", identifier);
+            return new Word(name, wordClass, identifier);
         }
 
         public static List<Word> MultipleSearch(string query)
@@ -105,18 +100,18 @@ namespace DDOAPI
             return words;
         }
 
-        public static string GetName(IHtmlCollection<IElement> elements)
+        private static string GetName(IHtmlCollection<IElement> matches)
         {
             string name = "";
-            for (int i = 0; i < elements.Length; i++)
+            for (int i = 0; i < matches.Length; i++)
             {
 
                 if (i > 0) name += " eller ";
                 
-                var firstChild = elements[i].FirstChild;
+                var firstChild = matches[i].FirstChild;
                 if (firstChild == null)
                 {
-                    name += elements[i].TextContent;
+                    name += matches[i].TextContent;
                 }
                 else
                 {
@@ -129,7 +124,23 @@ namespace DDOAPI
 
             return name;
         }
+        private static string GetWordClass(IElement definitionBox)
+        {
+            if (definitionBox.LastChild == null) throw new Exception("Definition box does not contain a last child");
+            if (definitionBox.QuerySelector(".definitionBox") == null)
+            {
+                return definitionBox.LastChild.TextContent;
+            }
+            else
+            {
+                
+                return definitionBox.Children[^2].TextContent;
+            }
 
 
+            
+        }
     }
+
+
 }

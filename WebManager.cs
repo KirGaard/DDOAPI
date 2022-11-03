@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
 
-namespace DDOAPI
+namespace DDOCrawler
 {
     internal static class WebManager
     {

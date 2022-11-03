@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DDOAPI
+namespace DDOCrawler
 {
     internal class Word
     {
         public string name;
         public int nameIdentifier;
         public string wordClass;
-
+    
         public Word(string name)
         {
             this.name = name;
@@ -42,13 +42,15 @@ namespace DDOAPI
         }
         public override bool Equals(object? obj)
         {
-            if (obj == null) return false;
-            
-            var other = obj as Word;
+            if (obj == null || obj is not Word other) return false;
+
+
             return other.name == name && other.nameIdentifier == nameIdentifier;
         }
 
-
-
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }
